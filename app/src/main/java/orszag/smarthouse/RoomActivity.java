@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -45,6 +46,8 @@ public class RoomActivity extends AppCompatActivity {
     private TextView temperature;
     private FloatingActionButton addDevice;
     private Room room;
+
+    String pritn = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +103,7 @@ public class RoomActivity extends AppCompatActivity {
 
             try {
                 Gson gson = new Gson();
-                String path = "http://thesmarthouse.azurewebsites.net/restAPI/Room/" + roomId[0];
+                String path = "http://thesmarthouse.azurewebsites.net/restAPI/Room/" + roomId[0] + "/1/bded74425176f692690a66bc3fcaf1ac";
                 URL url = new URL(path);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
@@ -115,6 +118,8 @@ public class RoomActivity extends AppCompatActivity {
                 JSONObject obj = new JSONObject(out.toString());
                 JSONObject roomJson = obj.getJSONObject("Room");
                 room = gson.fromJson(roomJson.toString(), Room.class);
+
+                pritn = obj.toString();
 
             } catch (final ClientProtocolException e) {
                 e.printStackTrace();
@@ -149,6 +154,7 @@ public class RoomActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Room room) {
+            Log.i("ERROR", pritn);
             if(room != null) {
                 ArrayList<Device> devices = (ArrayList) room.getDevices();
                 DevicesAdapter adapter = new DevicesAdapter(RoomActivity.this, devices);
@@ -168,7 +174,7 @@ public class RoomActivity extends AppCompatActivity {
                 });
                 error.setText("");
             } else {
-                showDevices();
+//                showDevices();
                 error.setText("Error occurred while retrieving room, connecting again");
             }
             progress.dismiss();

@@ -5,12 +5,14 @@ import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -50,6 +52,8 @@ public class AddRoomActivity extends AppCompatActivity {
     private Room room;
 
     String text;
+    String errorString;
+    String jsonToPrint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,25 +89,30 @@ public class AddRoomActivity extends AppCompatActivity {
             StringBuilder out;
 
             try {
-                Gson gson = new Gson();
-                String path = "http://thesmarthouse.azurewebsites.net/restAPI/Room/createRoom/1";
-//                URL url = new URL("http://thesmarthouse.azurewebsites.net/restAPI/House/getHouse/1");
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                String path = "http://thesmarthouse.azurewebsites.net/restAPI/Room/createRoom/1/bded74425176f692690a66bc3fcaf1ac";
 
                 room = new Room();
                 room.setId(0);
                 room.setDevices(new ArrayList<Device>());
                 room.setName("JurajsTestRoom");
+                room.setTemperature(123);
+                room.setEnergyConsumption(20000);
+                room.setWaterConsumption(1231232);
 
                 HttpClient httpClient = new DefaultHttpClient();
                 HttpPost httpPost = new HttpPost(path);
                 HttpResponse response;
                 JSONObject jsonObject = new JSONObject(gson.toJson(room));
-                StringEntity json = new StringEntity(jsonObject.toString());
+                JSONObject roomObject = new JSONObject();
+                roomObject.put("Room", jsonObject);
+                StringEntity json = new StringEntity(roomObject.toString());
                 json.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
                 httpPost.setEntity(json);
                 httpPost.setHeader("Accept", "application/json");
                 httpPost.setHeader("Content-type", "application/json");
 
+                jsonToPrint = roomObject.toString();
 //                ResponseHandler responseHandler = new BasicResponseHandler();
 //                response = (HttpResponse) httpClient.execute(httpPost, responseHandler);
                 response = httpClient.execute(httpPost);
@@ -112,15 +121,16 @@ public class AddRoomActivity extends AppCompatActivity {
 
 //                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
-//                final InputStream in = new BufferedInputStream(response.getStatusLine().getStatusCode());
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-//                out = new StringBuilder();
-//                String line = "";
-//                while ((line = reader.readLine()) != null) {
-//                    out.append(line);
-//                }
+                final InputStream in = new BufferedInputStream(response.getEntity().getContent());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                out = new StringBuilder();
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    out.append(line);
+                }
 
                 text = String.valueOf(response.getStatusLine().getStatusCode());
+                errorString = out.toString();
 
 //                JSONObject obj = new JSONObject(out.toString());
 //                JSONObject houseJson = obj.getJSONObject("House");
@@ -149,7 +159,9 @@ public class AddRoomActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Room room) {
 //            startActivity(new Intent(AddRoomActivity.this, MainActivity.class));
-            Toast.makeText(AddRoomActivity.this, text, Toast.LENGTH_LONG).show();
+//            Toast.makeText(AddRoomActivity.this, text, Toast.LENGTH_LONG).show();
+            Log.i("ERROR", errorString);
+            Log.i("ERROR-JSON", jsonToPrint);
         }
 
     }

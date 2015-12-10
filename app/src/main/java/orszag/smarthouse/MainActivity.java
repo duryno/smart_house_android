@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton addRoom;
     StringBuilder out;
     House house;
+    String print;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 Gson gson = new Gson();
-                URL url = new URL("http://thesmarthouse.azurewebsites.net/restAPI/House/getHouse/1");
+                URL url = new URL("http://thesmarthouse.azurewebsites.net/restAPI/House/getHouse/1/bded74425176f692690a66bc3fcaf1ac");
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
                 final InputStream in = new BufferedInputStream(urlConnection.getInputStream());
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject houseJson = obj.getJSONObject("House");
                 house = gson.fromJson(houseJson.toString(), House.class);
 
+                print = obj.toString();
+
             } catch (final ClientProtocolException e) {
                 e.printStackTrace();
             } catch (final IOException e) {
@@ -109,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(House house) {
+            Log.i("ERROR-org json", print);
             if(house != null) {
                 ArrayList<Room> rooms = (ArrayList) house.getRooms();
                 RoomsAdapter adapter = new RoomsAdapter(MainActivity.this, rooms);

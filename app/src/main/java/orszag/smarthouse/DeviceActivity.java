@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,6 +45,8 @@ public class DeviceActivity extends AppCompatActivity {
     Switch aSwitch;
     ProgressDialog progress;
     private Device device;
+
+    String json;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +105,7 @@ public class DeviceActivity extends AppCompatActivity {
 
             try {
                 Gson gson = new Gson();
-                String path = "http://thesmarthouse.azurewebsites.net/restAPI/Device/" + deviceId[0];
+                String path = "http://thesmarthouse.azurewebsites.net/restAPI/Device/" + deviceId[0] + "/1/bded74425176f692690a66bc3fcaf1ac";
                 URL url = new URL(path);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
@@ -115,6 +118,7 @@ public class DeviceActivity extends AppCompatActivity {
                 }
 
                 JSONObject obj = new JSONObject(out.toString());
+                json = obj.toString();
                 JSONObject deviceJson = obj.getJSONObject("Device");
                 device = gson.fromJson(deviceJson.toString(), Device.class);
 
@@ -130,6 +134,7 @@ public class DeviceActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Device device) {
+            Log.i("JSON", json.toString());
             if(device != null && device.getStatus() != null) {
                 tvStatus.setText(device.getName() + " is " + device.getStatus());
 
@@ -168,7 +173,7 @@ public class DeviceActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... params) {
 
             try {
-                String path = "http://thesmarthouse.azurewebsites.net/restAPI/Device/" + params[0] + "/" + params[1];
+                String path = "http://thesmarthouse.azurewebsites.net/restAPI/Device/" + params[0] + "/" + params[1] + "/1/bded74425176f692690a66bc3fcaf1ac";
                 DefaultHttpClient httpclient = new DefaultHttpClient();
                 HttpPut httpPut = new HttpPut(path);
                 HttpResponse response = httpclient.execute(httpPut);
