@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
             StringBuilder out;
 
             try {
-                String path = "http://thesmarthouse.azurewebsites.net/restAPI/User/" + params[0] + "/" + params[1] + "/1";
+                String path = "http://thesmarthouse.azurewebsites.net/restAPI/User/" + params[0] + "/" + params[1] + "/1/bded74425176f692690a66bc3fcaf1ac";
                 URL url = new URL(path);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 

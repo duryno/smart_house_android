@@ -1,5 +1,7 @@
 package orszag.smarthouse.objectClasses;
 
+import android.support.annotation.XmlRes;
+
 import java.util.List;
 
 /**
